@@ -1,0 +1,37 @@
+//Write a java program for a game tracker that allows the same players to continue playing while keeping track of every player's number of games won in a game of Farkle.
+
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class FarkleGameTracker {
+    public static void main(String[] args) {
+        Map<String, Integer> playerScores = new HashMap<>();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("Enter the player's name or 'exit' to end the program:");
+            String playerName = scanner.nextLine();
+
+            if (playerName.equalsIgnoreCase("exit")) {
+                break;
+            }
+
+            playerScores.putIfAbsent(playerName, 0);
+
+            int currentScore = playerScores.get(playerName);
+            playerScores.put(playerName, currentScore + 1);
+
+            System.out.println(playerName + " has won " + playerScores.get(playerName) + " games.");
+        }
+
+        System.out.println("Game tracker has ended. Final scores:");
+        for (Map.Entry<String, Integer> entry : playerScores.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue() + " games won.");
+        }
+    }
+}
+```
+
+//This program keeps track of the number of games won by each player in Farkle. It allows the same players to continue playing and updates the game scores accordingly.

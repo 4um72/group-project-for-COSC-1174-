@@ -1,4 +1,4 @@
-package OddsOfPlay;
+package application;
 
 public class Odds {
     protected int diceLeft;

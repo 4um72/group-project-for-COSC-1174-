@@ -7,6 +7,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -35,9 +36,9 @@ public class Main extends Application {
         ScorePane computerScorePane = new ScorePane("Computer\nScore");
         DicePane computerBankedDicePane = new DicePane("Computer\nBanked\nDice");
         DicePane playerBankedDicePane = new DicePane("Player\nBanked\nDice");
-        DiceAreaPane diceAreaPane = new DiceAreaPane(playerBankedDicePane, computerBankedDicePane);
         ScorePane playerScorePane = new ScorePane("Player\nScore");
-
+        DiceAreaPane diceAreaPane = new DiceAreaPane(playerBankedDicePane, computerBankedDicePane, playerScorePane);
+        
         root.getChildren().addAll(headerPane, computerScorePane, computerBankedDicePane, diceAreaPane, playerBankedDicePane, playerScorePane);
 
         // Set scene and stage
@@ -102,17 +103,25 @@ class HeaderPane extends StackPane {
 
 // ScorePane class
 class ScorePane extends StackPane {
+    private Label scoreValue;  // Make scoreValue an instance variable
+
     public ScorePane(String label) {
         setPrefHeight(60);
         Label scoreLabel = new Label(label);
         scoreLabel.setFont(Font.font(16));
         scoreLabel.setTranslateX(-15);
-        Label scoreValue = new Label("0");
+        scoreValue = new Label("0");  // Initialize scoreValue here
         scoreValue.setFont(Font.font(26));
         scoreValue.setTranslateX(40);
         getChildren().addAll(scoreLabel, scoreValue);
     }
+
+    // Define setScore outside of the ScorePane constructor
+    public void setScore(int score) {
+        scoreValue.setText(String.valueOf(score));
+    }
 }
+
 
 // DicePane class
 class DicePane extends StackPane {
@@ -134,113 +143,15 @@ class DicePane extends StackPane {
         diceBox.getChildren().add(dice);
     }
 
-}
-
-// DiceAreaPane class
-class DiceAreaPane extends StackPane {
-    private final Random random = new Random();
-    private final ImageView[] diceViews = new ImageView[6];
-    private final Timeline timeline = new Timeline();
-    private final int[] diceValues = new int[6];
-    private boolean rolling = false;
-    private DicePane playerDicePane;
-    private DicePane computerDicePane;
-
-    public DiceAreaPane(DicePane playerDicePane, DicePane computerDicePane) {
-        this.playerDicePane = playerDicePane;
-        this.computerDicePane = computerDicePane;
-        setPrefHeight(340);
-
-        GridPane diceGrid = new GridPane();
-        diceGrid.setHgap(40);
-        diceGrid.setVgap(40);
-        diceGrid.setPadding(new Insets(20, 20, 20, 20));
-
-        for (int i = 0; i < 6; i++) {
-            diceValues[i] = i + 1;
-            Image diceImage = new Image(getClass().getResourceAsStream("/images/BlackDie" + (i + 1) + ".png"));
-            diceViews[i] = new ImageView(diceImage);
-            int finalI = i;
-            diceViews[i].setOnMouseClicked(event -> {
-                if (!rolling) {
-                    // Remove the dice from the DiceAreaPane
-                    diceGrid.getChildren().remove(diceViews[finalI]);
-                    // Add the dice to the player's DicePane
-                    playerDicePane.addDice(diceViews[finalI]);
-                }
-            });
-            diceViews[i].setFitWidth(50);
-            diceViews[i].setFitHeight(50);
-            diceGrid.add(diceViews[i], i % 3, i / 3);
-        }
-
-        diceGrid.setTranslateY(60);
-        diceGrid.setTranslateX(40);
-
-        Label messageLabel = new Label("Player's Turn");
-        messageLabel.setTranslateY(-135);
-
-        Image rules = new Image(getClass().getResourceAsStream("/images/Rules.png"));
-        ImageView imageView = new ImageView(rules);
-        imageView.setTranslateX(170);
-
-        Button rollButton = new Button("Roll");
-        rollButton.setTranslateY(100);
-        rollButton.setTranslateX(-110);
-        rollButton.setFont(Font.font(12));
-        rollButton.setMaxSize(82, 30);
-        rollButton.setOnAction(event -> rollDice());
-
-        Button bankScoreButton = new Button("Bank Score");
-        bankScoreButton.setTranslateY(100);
-        bankScoreButton.setTranslateX(20);
-        bankScoreButton.setFont(Font.font(12));
-        bankScoreButton.setMaxSize(82, 30);
-
-        Button hint = new Button("?");
-        hint.setShape(new Circle(10));
-        hint.setMinSize(20, 20);
-        hint.setMaxSize(20, 20);
-        Tooltip hintTT = new Tooltip("Hint");
-        hint.setFont(Font.font(10));
-        hint.setTooltip(hintTT);
-        hint.setTranslateX(-110);
-        hint.setTranslateY(140);
-
-        getChildren().addAll(messageLabel, diceGrid, rollButton, bankScoreButton, imageView, hint);
-
-        timeline.setCycleCount(1);
-        timeline.setOnFinished(event -> rolling = false);
-
+    public void removeDice(ImageView dice) {
+        diceBox.getChildren().remove(dice);
     }
 
-    private void rollDice() {
-        if (!rolling) {
-            rolling = true;
-            timeline.getKeyFrames().clear();
-            for (int i = 0; i < 6; i++) {
-                int finalI = i;
-                // Add multiple keyframes to create a "shuffling" effect
-                for (int j = 0; j < 10; j++) {
-                    timeline.getKeyFrames().add(
-                            new KeyFrame(Duration.millis(j * 100.0 + finalI * 100.0), event -> {
-                                int newValue = random.nextInt(6) + 1;
-                                Image newImage = new Image(getClass().getResourceAsStream("/images/BlackDie" + newValue + ".png"));
-                                diceViews[finalI].setImage(newImage);
-                            })
-                    );
-                }
-                // Add a final keyframe to set the final dice value
-                timeline.getKeyFrames().add(
-                        new KeyFrame(Duration.millis(1000.0 + finalI * 100.0), event -> {
-                            diceValues[finalI] = random.nextInt(6) + 1;
-                            Image newImage = new Image(getClass().getResourceAsStream("/images/BlackDie" + diceValues[finalI] + ".png"));
-                            diceViews[finalI].setImage(newImage);
-                        })
-                );
-            }
-            timeline.play();
+    public void removeAllClickEvents() {
+        for (Node dice : diceBox.getChildren()) {
+            ((ImageView) dice).setOnMouseClicked(null);
         }
-    }
-
+    } 
 }
+
+

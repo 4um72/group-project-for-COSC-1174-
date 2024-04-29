@@ -1,5 +1,5 @@
 //Write a java program for a game tracker that allows the same players to continue playing while keeping track of every player's number of games won in a game of Farkle.
-
+package application;
 
 import java.util.HashMap;
 import java.util.Map;

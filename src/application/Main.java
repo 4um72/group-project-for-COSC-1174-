@@ -1,29 +1,19 @@
 package application;
 
-import java.util.Random;
-
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class Main extends Application {
 
@@ -37,7 +27,7 @@ public class Main extends Application {
         DicePane computerBankedDicePane = new DicePane("Computer\nBanked\nDice");
         DicePane playerBankedDicePane = new DicePane("Player\nBanked\nDice");
         ScorePane playerScorePane = new ScorePane("Player\nScore");
-        DiceAreaPane diceAreaPane = new DiceAreaPane(playerBankedDicePane, computerBankedDicePane, playerScorePane);
+        DiceAreaPane diceAreaPane = new DiceAreaPane(playerBankedDicePane, computerBankedDicePane);
         
         root.getChildren().addAll(headerPane, computerScorePane, computerBankedDicePane, diceAreaPane, playerBankedDicePane, playerScorePane);
 
@@ -121,7 +111,6 @@ class ScorePane extends StackPane {
         scoreValue.setText(String.valueOf(score));
     }
 }
-
 
 // DicePane class
 class DicePane extends StackPane {

@@ -1,3 +1,5 @@
+package application;
+
 module Farkle2 {
 	requires javafx.controls;
 	requires javafx.graphics;
